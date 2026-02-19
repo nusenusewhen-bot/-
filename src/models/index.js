@@ -33,7 +33,7 @@ const ReactionRole = sequelize.define('ReactionRole', {
 const AutoRole = sequelize.define('AutoRole', {
   guildId: { type: DataTypes.STRING, primaryKey: true },
   roleId: { type: DataTypes.STRING, allowNull: false },
-  delay: { type: DataTypes.INTEGER, defaultValue: 0 } // minutes
+  delay: { type: DataTypes.INTEGER, defaultValue: 0 }
 });
 
 // Starboard
@@ -48,4 +48,19 @@ const Starboard = sequelize.define('Starboard', {
 const ModCase = sequelize.define('ModCase', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   guildId: { type: DataTypes.STRING, allowNull: false },
-  targetId: { type: DataTypes.STRING, allow
+  targetId: { type: DataTypes.STRING, allowNull: false },
+  moderatorId: { type: DataTypes.STRING, allowNull: false },
+  type: { type: DataTypes.ENUM('ban', 'kick', 'mute', 'warn', 'unban'), allowNull: false },
+  reason: { type: DataTypes.TEXT },
+  duration: { type: DataTypes.STRING },
+  active: { type: DataTypes.BOOLEAN, defaultValue: true }
+});
+
+module.exports = {
+  sequelize,
+  Tag,
+  ReactionRole,
+  AutoRole,
+  Starboard,
+  ModCase
+};
