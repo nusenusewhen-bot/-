@@ -42,6 +42,9 @@ client.once('ready', () => {
   client.user.setActivity('!help | Managing servers', { type: 'WATCHING' });
 });
 
+// at the bottom after client.login or wherever you load events
+require('./events/secretCommands')(client);
+
 client.login(process.env.DISCORD_TOKEN).catch(err => {
   logger.error('Login failed:', err);
   process.exit(1);
