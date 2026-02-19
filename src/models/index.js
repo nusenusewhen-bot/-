@@ -7,7 +7,6 @@ const sequelize = new Sequelize({
   logging: false
 });
 
-// Tags/Custom Commands (Carl-bot's signature feature)
 const Tag = sequelize.define('Tag', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   guildId: { type: DataTypes.STRING, allowNull: false },
@@ -18,7 +17,6 @@ const Tag = sequelize.define('Tag', {
   cooldown: { type: DataTypes.INTEGER, defaultValue: 0 }
 });
 
-// Reaction Roles
 const ReactionRole = sequelize.define('ReactionRole', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   guildId: { type: DataTypes.STRING, allowNull: false },
@@ -29,14 +27,12 @@ const ReactionRole = sequelize.define('ReactionRole', {
   type: { type: DataTypes.ENUM('toggle', 'unique', 'verify', 'drop'), defaultValue: 'toggle' }
 });
 
-// Auto Roles
 const AutoRole = sequelize.define('AutoRole', {
   guildId: { type: DataTypes.STRING, primaryKey: true },
   roleId: { type: DataTypes.STRING, allowNull: false },
   delay: { type: DataTypes.INTEGER, defaultValue: 0 }
 });
 
-// Starboard
 const Starboard = sequelize.define('Starboard', {
   guildId: { type: DataTypes.STRING, primaryKey: true },
   channelId: { type: DataTypes.STRING, allowNull: false },
@@ -44,7 +40,6 @@ const Starboard = sequelize.define('Starboard', {
   emoji: { type: DataTypes.STRING, defaultValue: '⭐' }
 });
 
-// Moderation Logs
 const ModCase = sequelize.define('ModCase', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   guildId: { type: DataTypes.STRING, allowNull: false },
