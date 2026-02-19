@@ -14,9 +14,11 @@ module.exports = [
       if (!target) return message.reply('User not found');
       if (!target.bannable) return message.reply('I cannot ban this user');
       const reason = args.slice(1).join(' ') || 'No reason provided';
+      
+      await target.send({ embeds: [CarlEmbeds.error(`Banned from ${message.guild.name}`, `**Reason:** ${reason}`)] }).catch(() => {});
       await target.ban({ reason: `${message.author.tag}: ${reason}` });
       await ModCase.create({ guildId: message.guild.id, targetId: target.id, moderatorId: message.author.id, type: 'ban', reason });
-      await target.send({ embeds: [CarlEmbeds.error(`Banned from ${message.guild.name}`, `**Reason:** ${reason}`)] }).catch(() => {});
+      
       return message.reply({ embeds: [CarlEmbeds.success('User Banned', `Banned ${target.user.tag} | ${reason}`)] });
     }
   },
@@ -31,9 +33,11 @@ module.exports = [
       if (!target) return message.reply('User not found');
       if (!target.kickable) return message.reply('I cannot kick this user');
       const reason = args.slice(1).join(' ') || 'No reason provided';
+      
+      await target.send({ embeds: [CarlEmbeds.error(`Kicked from ${message.guild.name}`, `**Reason:** ${reason}`)] }).catch(() => {});
       await target.kick(`${message.author.tag}: ${reason}`);
       await ModCase.create({ guildId: message.guild.id, targetId: target.id, moderatorId: message.author.id, type: 'kick', reason });
-      await target.send({ embeds: [CarlEmbeds.error(`Kicked from ${message.guild.name}`, `**Reason:** ${reason}`)] }).catch(() => {});
+      
       return message.reply({ embeds: [CarlEmbeds.success('User Kicked', `Kicked ${target.user.tag} | ${reason}`)] });
     }
   },
@@ -81,8 +85,10 @@ module.exports = [
       const target = message.mentions.members.first() || await message.guild.members.fetch(args[0]).catch(() => null);
       if (!target) return message.reply('User not found');
       const reason = args.slice(1).join(' ') || 'No reason provided';
-      await ModCase.create({ guildId: message.guild.id, targetId: target.id, moderatorId: message.author.id, type: 'warn', reason });
+      
       await target.send({ embeds: [CarlEmbeds.error(`Warned in ${message.guild.name}`, `**Reason:** ${reason}`)] }).catch(() => {});
+      await ModCase.create({ guildId: message.guild.id, targetId: target.id, moderatorId: message.author.id, type: 'warn', reason });
+      
       return message.reply({ embeds: [CarlEmbeds.success('User Warned', `Warned ${target.user.tag} | ${reason}`)] });
     }
   },
