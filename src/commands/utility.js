@@ -1,6 +1,19 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const CarlEmbeds = require('../utils/embeds');
 
+// Snipe storage - max 10 messages per channel, 2 hour expiry
+const snipes = new Map();
+
+// Cleanup old snipes every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [channelId, messages] of snipes) {
+    const filtered = messages.filter(m => now - m.time < 7200000); // 2 hours
+    if (filtered.length === 0) snipes.delete(channelId);
+    else snipes.set(channelId, filtered);
+  }
+}, 300000);
+
 module.exports = [
   {
     name: 'help',
@@ -34,8 +47,8 @@ module.exports = [
             inline: false 
           },
           { 
-            name: '🛠️ Utility (15)', 
-            value: '`say` `embed` `avatar` `serverinfo` `userinfo` `roleinfo` `channelinfo` `poll` `remind` `calc` `roll` `flip` `choose` `8ball` `help`',
+            name: '🛠️ Utility (16)', 
+            value: '`say` `embed` `avatar` `serverinfo` `userinfo` `roleinfo` `channelinfo` `poll` `remind` `calc` `roll` `flip` `choose` `8ball` `snipe` `help`',
             inline: false 
           },
           { 
@@ -55,6 +68,40 @@ module.exports = [
           }
         )
         .setFooter({ text: '!help <command> for details' });
+
+      return message.reply({ embeds: [embed] });
+    }
+  },
+  {
+    name: 'snipe',
+    aliases: ['s'],
+    description: 'Show recently deleted messages',
+    usage: '[number]',
+    async execute(message, args) {
+      const channelSnipes = snipes.get(message.channel.id);
+      if (!channelSnipes || channelSnipes.length === 0) {
+        return message.reply({ embeds: [CarlEmbeds.error('Nothing to snipe', 'No recently deleted messages in this channel.')] });
+      }
+
+      const index = parseInt(args[0]) || 1;
+      if (index < 1 || index > channelSnipes.length) {
+        return message.reply(`Provide a number between 1-${channelSnipes.length}`);
+      }
+
+      const snipe = channelSnipes[index - 1];
+      const timeAgo = Math.floor((Date.now() - snipe.time) / 1000 / 60); // minutes
+
+      const embed = new EmbedBuilder()
+        .setAuthor({ name: snipe.author.tag, iconURL: snipe.author.avatar })
+        .setDescription(snipe.content || '*No text content*')
+        .setColor('#3498db')
+        .setFooter({ text: `Deleted ${timeAgo}m ago • ${index}/${channelSnipes.length}` })
+        .setTimestamp(snipe.time);
+
+      if (snipe.image) embed.setImage(snipe.image);
+      if (snipe.attachments.length > 0 && !snipe.image) {
+        embed.addFields({ name: 'Attachments', value: snipe.attachments.join('\n') });
+      }
 
       return message.reply({ embeds: [embed] });
     }
@@ -274,3 +321,6 @@ module.exports = [
     }
   }
 ];
+
+// Export snipes for event handler
+module.exports.snipes = snipes;
