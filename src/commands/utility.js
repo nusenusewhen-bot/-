@@ -13,7 +13,7 @@ module.exports = [
         if (!cmd) return message.reply('Command not found');
         
         const embed = new EmbedBuilder()
-          .setTitle(`Help: !${cmd.name}`)
+          .setTitle(`!${cmd.name}`)
           .setDescription(cmd.description || 'No description')
           .addFields(
             { name: 'Usage', value: `\`!${cmd.name} ${cmd.usage || ''}\``, inline: true },
@@ -23,24 +23,39 @@ module.exports = [
         return message.reply({ embeds: [embed] });
       }
 
-      const categories = {
-        'Moderation': ['ban', 'kick', 'mute', 'unmute', 'warn', 'unban', 'purge', 'slowmode', 'lock', 'unlock', 'nickname'],
-        'Utility': ['say', 'embed', 'avatar', 'serverinfo', 'userinfo', 'roleinfo', 'channelinfo', 'poll', 'remind', 'calc', 'roll', 'flip', 'choose', '8ball', 'help'],
-        'Roles': ['role', 'autorole', 'temprole', 'roleall'],
-        'Tags': ['tag'],
-        'Config': ['reactionrole', 'starboard', 'prefix']
-      };
-
       const embed = new EmbedBuilder()
-        .setTitle('📋 Command List')
-        .setDescription(`Prefix: \`!\` | Total: ${client.commands.size} commands`)
-        .setColor('#3498db');
+        .setTitle('📋 Commands')
+        .setDescription(`Prefix: \`!\` • ${client.commands.size} commands`)
+        .setColor('#3498db')
+        .addFields(
+          { 
+            name: '🔨 Moderation (11)', 
+            value: '`ban` `kick` `mute` `unmute` `warn` `unban` `purge` `slowmode` `lock` `unlock` `nickname`',
+            inline: false 
+          },
+          { 
+            name: '🛠️ Utility (15)', 
+            value: '`say` `embed` `avatar` `serverinfo` `userinfo` `roleinfo` `channelinfo` `poll` `remind` `calc` `roll` `flip` `choose` `8ball` `help`',
+            inline: false 
+          },
+          { 
+            name: '👤 Roles (4)', 
+            value: '`role` `autorole` `temprole` `roleall`',
+            inline: false 
+          },
+          { 
+            name: '🏷️ Tags (1)', 
+            value: '`tag`',
+            inline: false 
+          },
+          { 
+            name: '⚙️ Config (3)', 
+            value: '`reactionrole` `starboard` `prefix`',
+            inline: false 
+          }
+        )
+        .setFooter({ text: '!help <command> for details' });
 
-      for (const [cat, cmds] of Object.entries(categories)) {
-        embed.addFields({ name: cat, value: cmds.map(c => `\`${c}\``).join(' '), inline: false });
-      }
-
-      embed.setFooter({ text: 'Type !help <command> for details' });
       return message.reply({ embeds: [embed] });
     }
   },
