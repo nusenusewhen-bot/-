@@ -7,30 +7,24 @@ module.exports = (client) => {
   client.aliases = new Collection();
   
   const commandsPath = path.join(__dirname, '../commands');
+  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+  for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const commands = require(filePath);
+    
+    // Handle both single command and array of commands
+    const commandArray = Array.isArray(commands) ? commands : [commands];
+    
+    for (const command of commandArray) {
+      if (command.name) {
+        client.commands.set(command.name, command);
+        if (command.aliases) {
+          command.aliases.forEach(alias => client.aliases.set(alias, command.name));
+        }
+      }
+    }
+  }
   
-  const loadCommand = (filePath) => {
-    const command = require(filePath);
-    if (command.name) {
-      client.commands.set(command.name, command);
-      if (command.aliases) {
-        command.aliases.forEach(alias => client.aliases.set(alias, command.name));
-      }
-    }
-  };
-
-  // Recursively load commands
-  const readCommands = (dir) => {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-      const filePath = path.join(dir, file);
-      if (fs.statSync(filePath).isDirectory()) {
-        readCommands(filePath);
-      } else if (file.endsWith('.js')) {
-        loadCommand(filePath);
-      }
-    }
-  };
-
-  readCommands(commandsPath);
   console.log(`Loaded ${client.commands.size} commands`);
 };
