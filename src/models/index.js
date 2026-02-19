@@ -1,9 +1,24 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const path = require('path');
+const fs = require('fs');
+
+// Use /tmp for Railway (writable), local for dev
+const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_SERVICE_NAME;
+const dbPath = isRailway 
+  ? '/tmp/database.sqlite' 
+  : path.join(__dirname, '../../data/database.sqlite');
+
+// Ensure data folder exists locally
+if (!isRailway) {
+  const dataDir = path.join(__dirname, '../../data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+}
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.join(__dirname, '../../data/database.sqlite'),
+  storage: dbPath,
   logging: false
 });
 
